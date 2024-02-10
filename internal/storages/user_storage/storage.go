@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/Tel3scop/auth/internal/entities"
-	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
 )
 
 // SyncMap Эмуляция БД с сиквенсом
@@ -43,23 +42,23 @@ func GetByID(ctx context.Context, id int64) (entities.User, error) {
 	return user, nil
 }
 
-// UpdateByID обновление пользователя по структуре userAPI.UpdateRequest. При его отсутствии возвращаем пустую структуру.
-func UpdateByID(ctx context.Context, request *userAPI.UpdateRequest) (entities.User, error) {
+// UpdateByID обновление пользователя по структуре entities.UpdatingUserData. При отсутствии пользователя с ID возвращаем пустую структуру.
+func UpdateByID(ctx context.Context, userID int64, data entities.UpdatingUserData) (entities.User, error) {
 	_ = ctx
 	var user entities.User
 	users.m.Lock()
 	defer users.m.Unlock()
 
-	user, ok := users.elems[request.Id]
+	user, ok := users.elems[userID]
 	if !ok {
-		return entities.User{}, fmt.Errorf("user %d not found", request.Id)
+		return entities.User{}, fmt.Errorf("user %d not found", userID)
 	}
-	user.Name = request.Name
-	user.Email = request.Email
-	user.Role = request.Role
-	users.elems[request.Id] = user
+	user.Name = data.Name
+	user.Email = data.Email
+	user.Role = data.Role
+	users.elems[userID] = user
 
-	return users.elems[request.Id], nil
+	return users.elems[userID], nil
 }
 
 // DeleteByID удаление пользователя по структуре userAPI.UpdateRequest.

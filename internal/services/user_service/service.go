@@ -43,7 +43,12 @@ func GetByID(ctx context.Context, id int64) entities.User {
 
 // UpdateByID обновление пользователя по ID
 func UpdateByID(ctx context.Context, request *userAPI.UpdateRequest) {
-	_, err := user_storage.UpdateByID(ctx, request)
+	updatingData := entities.UpdatingUserData{
+		Name:  request.Name,
+		Email: request.Email,
+		Role:  request.Role,
+	}
+	_, err := user_storage.UpdateByID(ctx, request.Id, updatingData)
 	if err != nil {
 		log.Println(err.Error())
 	}
