@@ -20,10 +20,10 @@ var users = &UserDatabase{
 }
 
 // Create Метод создания нового пользователя.
-func Create(ctx context.Context, userData entities.User) (entities.User, error) {
-	_ = ctx
+func Create(_ context.Context, userData entities.User) (entities.User, error) {
 	users.m.Lock()
 	defer users.m.Unlock()
+
 	users.sequence++
 	userData.ID = users.sequence
 	users.elems[users.sequence] = userData
@@ -32,10 +32,10 @@ func Create(ctx context.Context, userData entities.User) (entities.User, error) 
 }
 
 // GetByID получение пользователя по ID. При его отсутствии возвращаем пустую структуру.
-func GetByID(ctx context.Context, id int64) (entities.User, error) {
-	_ = ctx
+func GetByID(_ context.Context, id int64) (entities.User, error) {
 	users.m.RLock()
 	defer users.m.RUnlock()
+
 	user, ok := users.elems[id]
 	if !ok {
 
@@ -46,8 +46,7 @@ func GetByID(ctx context.Context, id int64) (entities.User, error) {
 }
 
 // UpdateByID обновление пользователя по структуре entities.UpdatingUserData. При отсутствии пользователя с ID возвращаем пустую структуру.
-func UpdateByID(ctx context.Context, userID int64, data entities.UpdatingUserData) (entities.User, error) {
-	_ = ctx
+func UpdateByID(_ context.Context, userID int64, data entities.UpdatingUserData) (entities.User, error) {
 	var user entities.User
 	users.m.Lock()
 	defer users.m.Unlock()
@@ -66,10 +65,10 @@ func UpdateByID(ctx context.Context, userID int64, data entities.UpdatingUserDat
 }
 
 // DeleteByID удаление пользователя по структуре userAPI.UpdateRequest.
-func DeleteByID(ctx context.Context, id int64) error {
-	_ = ctx
+func DeleteByID(_ context.Context, id int64) error {
 	users.m.Lock()
 	defer users.m.Unlock()
+
 	_, ok := users.elems[id]
 	if !ok {
 
