@@ -16,7 +16,8 @@ type userServer struct {
 
 func (s *userServer) Get(ctx context.Context, req *userAPI.GetRequest) (*userAPI.GetResponse, error) {
 	log.Printf("Getting user id: %d", req.GetId())
-	user := user_service.GetByID(ctx, req.Id)
+	user, err := user_service.GetByID(ctx, req.Id)
+
 	return &userAPI.GetResponse{
 		Id:        user.ID,
 		Name:      user.Name,
@@ -24,25 +25,28 @@ func (s *userServer) Get(ctx context.Context, req *userAPI.GetRequest) (*userAPI
 		Email:     user.Email,
 		CreatedAt: timestamppb.New(user.CreatedAt),
 		UpdatedAt: timestamppb.New(user.UpdatedAt),
-	}, nil
+	}, err
 }
 
 func (s *userServer) Create(ctx context.Context, req *userAPI.CreateRequest) (*userAPI.CreateResponse, error) {
 	log.Printf("Creating data: %+v", req)
-	createdUserID := user_service.Create(ctx, req)
+	createdUserID, err := user_service.Create(ctx, req)
+
 	return &userAPI.CreateResponse{
 		Id: createdUserID,
-	}, nil
+	}, err
 }
 
 func (s *userServer) Update(ctx context.Context, req *userAPI.UpdateRequest) (*emptypb.Empty, error) {
 	log.Printf("Updating data: %+v", req)
-	user_service.UpdateByID(ctx, req)
-	return &emptypb.Empty{}, nil
+	err := user_service.UpdateByID(ctx, req)
+
+	return &emptypb.Empty{}, err
 }
 
 func (s *userServer) Delete(ctx context.Context, req *userAPI.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("Deleting data: %+v", req)
-	user_service.DeleteByID(ctx, req.GetId())
-	return &emptypb.Empty{}, nil
+	err := user_service.DeleteByID(ctx, req.GetId())
+
+	return &emptypb.Empty{}, err
 }

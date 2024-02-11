@@ -8,14 +8,14 @@ import (
 	"github.com/Tel3scop/auth/internal/entities"
 )
 
-// SyncMap Эмуляция БД с сиквенсом
-type SyncMap struct {
+// UserDatabase Эмуляция БД с сиквенсом
+type UserDatabase struct {
 	elems    map[int64]entities.User
 	m        sync.RWMutex
 	sequence int64
 }
 
-var users = &SyncMap{
+var users = &UserDatabase{
 	elems: make(map[int64]entities.User),
 }
 
@@ -27,6 +27,7 @@ func Create(ctx context.Context, userData entities.User) (entities.User, error) 
 	users.sequence++
 	userData.ID = users.sequence
 	users.elems[users.sequence] = userData
+
 	return users.elems[users.sequence], nil
 }
 
@@ -37,8 +38,10 @@ func GetByID(ctx context.Context, id int64) (entities.User, error) {
 	defer users.m.RUnlock()
 	user, ok := users.elems[id]
 	if !ok {
+
 		return entities.User{}, fmt.Errorf("user %d not found", id)
 	}
+
 	return user, nil
 }
 
@@ -51,6 +54,7 @@ func UpdateByID(ctx context.Context, userID int64, data entities.UpdatingUserDat
 
 	user, ok := users.elems[userID]
 	if !ok {
+
 		return entities.User{}, fmt.Errorf("user %d not found", userID)
 	}
 	user.Name = data.Name
@@ -68,8 +72,10 @@ func DeleteByID(ctx context.Context, id int64) error {
 	defer users.m.Unlock()
 	_, ok := users.elems[id]
 	if !ok {
+
 		return fmt.Errorf("user %d not found", id)
 	}
+
 	delete(users.elems, id)
 
 	return nil

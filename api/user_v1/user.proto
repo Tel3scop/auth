@@ -16,8 +16,9 @@ service UserV1 {
 }
 
 enum Role {
-  UserRole = 0;
-  AdminRole = 1;
+  UNSPECIFIED = 0;
+  User = 1;
+  Admin = 2;
 }
 
 message CreateRequest {
