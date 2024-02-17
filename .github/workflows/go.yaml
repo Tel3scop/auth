@@ -101,7 +101,7 @@ jobs:
           known_hosts: ${{ secrets.SERVER_HOST }}
 
       - name: Copy migrations with scp
-        run: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ./migrations/** ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:~/migrations
+        run: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ./migrations/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:~/migrations
 
 
   deploy-image:
