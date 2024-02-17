@@ -96,17 +96,17 @@ jobs:
 
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSHKEY }}
-          known_hosts: ${{ secrets.SERVER_HOST }}
-
-      - name: Deploy with rsync
-        run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Install SSH Key
+#        uses: shimataro/ssh-key-action@v2
+#        with:
+#          key: ${{ secrets.SSHKEY }}
+#          known_hosts: ${{ secrets.SERVER_HOST }}
+#
+#      - name: Deploy with rsync
+#        run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
 
       #      - name: SCP files via ssh key
 #        uses: appleboy/scp-action@master
@@ -142,4 +142,5 @@ jobs:
 
 
             # Run migrations
+            rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
             docker-compose up -d --force-recreate --build migrator
