@@ -108,14 +108,14 @@ jobs:
 #      - name: Deploy with rsync
 #        run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
 
-      #      - name: SCP files via ssh key
-#        uses: appleboy/scp-action@master
-#        with:
-#          host: ${{ secrets.SERVER_HOST }}
-#          username: ${{ secrets.SSH_USERNAME }}
-#          key: ${{ secrets.SSHKEY }}
-#          source: "migrations/*"
-#          target: "migrations/"
+      - name: SCP files via ssh key
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSHKEY }}
+          source: "migrations/*"
+          target: "migrations/"
 
       - name: Deploy to Selectel Cloud via SSH action
         uses: appleboy/ssh-action@v1.0.0
@@ -138,12 +138,7 @@ jobs:
             docker rm $CONTAINER_NAME
             
             # Run a new container from a new image
-            docker run -d -p 50051:50051 --name $CONTAINER_NAME -t $REGISTRY/$IMAGE_NAME:$TAG_NAME
-
-            pwd 
-            ls -la .
+            docker run -d -p 50051:50051 --name $CONTAINER_NAME -t $REGISTRY/$IMAGE_NAME:$TAG_NAME     
             
-
             # Run migrations
-            rsync -avz -e "ssh -o StrictHostKeyChecking=no" auth/migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
             docker-compose up -d --force-recreate --build migrator
