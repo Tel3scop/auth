@@ -8,8 +8,8 @@ env:
 on:
   push:
     branches: [ main, master, add-database ]
-  pull_request:
-    branches: [ main, master, add-database ]
+#  pull_request:
+#    branches: [ main, master, add-database ]
 
 jobs:
   linter:
@@ -103,9 +103,9 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSHKEY }}
-          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,CONTAINER_NAME
           source: './migrations,migration.Dockerfile'
           target: './migrations,migration.Dockerfile'
+
       - name: Deploy to Selectel Cloud via SSH action
         uses: appleboy/ssh-action@v1.0.0
         with:
