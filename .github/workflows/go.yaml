@@ -4,13 +4,9 @@ env:
   REGISTRY: "cr.selcloud.ru/olezhek"
   IMAGE_NAME: "auth-server"
   CONTAINER_NAME: "auth-server-container"
-#TODO не забыть удалить тестовую ветку из целей
 on:
   push:
-    branches: [ main, master, add-database ]
-#  pull_request:
-#    branches: [ main, master, add-database ]
-
+    branches: [ main, master ]
 jobs:
   linter:
     name: lint
@@ -121,18 +117,60 @@ jobs:
           script: |
             # Set up variables
             TAG_NAME=$(echo $GITHUB_SHA | head -c7)
-            
+            export=$TAG_NAME
             # Login into Selectel Registry
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} $REGISTRY
-            
-            # Stop running container
-            docker stop $CONTAINER_NAME
-            
-            # Remove old container
-            docker rm $CONTAINER_NAME
-            
+           
+            # Pull new registry container
+            docker pull $REGISTRY/$IMAGE_NAME:$TAG_NAME
+                      
             # Run a new container from a new image
-            docker run -d -p 50051:50051 --name $CONTAINER_NAME -t $REGISTRY/$IMAGE_NAME:$TAG_NAME     
+            docker-compose up -d --force-recreate --build auth 
             
             # Run migrations
             docker-compose up -d --force-recreate --build migrator
+#on:
+#  pull_request:
+#    branches: [ main, master, add-database ]
+#jobs:
+#  linter:
+#    name: lint
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions/setup-go@v5
+#        with:
+#          go-version: '1.21'
+#          cache: false
+#      - name: golangci-lint
+#        uses: golangci/golangci-lint-action@v4
+#        with:
+#          # Require: The version of golangci-lint to use.
+#          # When `install-mode` is `binary` (default) the value can be v1.2 or v1.2.3 or `latest` to use the latest version.
+#          # When `install-mode` is `goinstall` the value can be v1.2.3, `latest`, or the hash of a commit.
+#          version: v1.54
+#
+#          # Optional: working directory, useful for monorepos
+#          # working-directory: somedir
+#
+#          # Optional: golangci-lint command line arguments.
+#          #
+#          # Note: By default, the `.golangci.yml` file should be at the root of the repository.
+#          # The location of the configuration file can be changed by using `--config=`
+#          args: --timeout=30m --config=./.golangci.pipeline.yaml --issues-exit-code=0
+#
+#          # Optional: show only new issues if it's a pull request. The default value is `false`.
+#          # only-new-issues: true
+#
+#          # Optional: if set to true, then all caching functionality will be completely disabled,
+#          #           takes precedence over all other caching options.
+#          # skip-cache: true
+#
+#          # Optional: if set to true, then the action won't cache or restore ~/go/pkg.
+#          # skip-pkg-cache: true
+#
+#          # Optional: if set to true, then the action won't cache or restore ~/.cache/go-build.
+#          # skip-build-cache: true
+#
+#          # Optional: The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
+#          # install-mode: "goinstall"

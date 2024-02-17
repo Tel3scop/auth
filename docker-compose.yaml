@@ -1,9 +1,15 @@
 version: '3'
 
-volumes:
-  postgres_volume:
-
 services:
+  auth:
+    image: cr.selcloud.ru/olezhek/auth-server:${TAG_NAME}
+    env_file:
+      - ".env"
+    ports:
+      - "${GRPC_PORT}:${GRPC_PORT}"
+    depends_on:
+      - db
+
   db:
     image: postgres:15-alpine3.17
     env_file:
@@ -28,3 +34,6 @@ services:
       - db
 
     restart: on-failure
+
+volumes:
+  postgres_volume:
