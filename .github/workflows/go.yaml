@@ -101,12 +101,12 @@ jobs:
           known_hosts: ${{ secrets.SERVER_HOST }}
 
       - name: Copy migrations with scp
-        run: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ./migrations ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:~/
+        run: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ./migrations/** ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:~/migrations
 
 
   deploy-image:
     runs-on: ubuntu-latest
-    needs: image-build-and-push
+    needs: copy-migrations
 
 
     steps:
