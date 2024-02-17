@@ -106,7 +106,7 @@ jobs:
           known_hosts: ${{ secrets.SERVER_HOST }}
 
       - name: Deploy with rsync
-        run: pwd && ls -la . && rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
+        run: pwd && ls -la . && rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
 #
 #      - name: SCP files via ssh key
 #        uses: appleboy/scp-action@master
