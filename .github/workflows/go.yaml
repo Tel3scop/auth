@@ -96,26 +96,26 @@ jobs:
 
 
     steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#
-#      - name: Install SSH Key
-#        uses: shimataro/ssh-key-action@v2
-#        with:
-#          key: ${{ secrets.SSHKEY }}
-#          known_hosts: ${{ secrets.SERVER_HOST }}
-#
-#      - name: Deploy with rsync
-#        run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: SCP files via ssh key
-        uses: appleboy/scp-action@master
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSHKEY }}
-          source: "migrations/*"
-          target: "migrations/"
+          known_hosts: ${{ secrets.SERVER_HOST }}
+
+      - name: Deploy with rsync
+        run: pwd && ls -la . && rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
+#
+#      - name: SCP files via ssh key
+#        uses: appleboy/scp-action@master
+#        with:
+#          host: ${{ secrets.SERVER_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          key: ${{ secrets.SSHKEY }}
+#          source: "migrations/*"
+#          target: "migrations/"
 
       - name: Deploy to Selectel Cloud via SSH action
         uses: appleboy/ssh-action@v1.0.0
