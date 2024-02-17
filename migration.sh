@@ -1,4 +1,4 @@
 #!/bin/bash
-source .env
+source migration.env
 
-sleep 2 && goose -dir "${MIGRATION_DIR}" postgres "host=${MIGRATION_DIR} port=${MIGRATION_DIR} dbname=${MIGRATION_DIR} user=${MIGRATION_DIR} password=${MIGRATION_DIR} sslmode=${MIGRATION_DIR}" up -v
+sleep 5 && goose -dir "${MIGRATION_DIR}" postgres "host=${POSTGRES_HOST} port=${POSTGRES_PORT} dbname=${POSTGRES_DB} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=${POSTGRES_SSLMODE}" up -v

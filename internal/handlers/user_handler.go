@@ -4,7 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/Tel3scop/auth/internal/services/user_service"
+	"github.com/Tel3scop/auth/internal/config"
+	"github.com/Tel3scop/auth/internal/services"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -12,11 +13,13 @@ import (
 
 type userServer struct {
 	userAPI.UnimplementedUserV1Server
+	services *services.Container
+	cfg      *config.Config
 }
 
 func (s *userServer) Get(ctx context.Context, req *userAPI.GetRequest) (*userAPI.GetResponse, error) {
 	log.Printf("Getting user id: %d", req.GetId())
-	user, err := user_service.GetByID(ctx, req.Id)
+	user, err := s.services.Users.GetByID(ctx, req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +37,7 @@ func (s *userServer) Get(ctx context.Context, req *userAPI.GetRequest) (*userAPI
 func (s *userServer) Create(ctx context.Context, req *userAPI.CreateRequest) (*userAPI.CreateResponse, error) {
 	log.Printf("Creating data: %+v", req)
 
-	createdUserID, err := user_service.Create(ctx, req)
+	createdUserID, err := s.services.Users.Create(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +48,7 @@ func (s *userServer) Create(ctx context.Context, req *userAPI.CreateRequest) (*u
 func (s *userServer) Update(ctx context.Context, req *userAPI.UpdateRequest) (*emptypb.Empty, error) {
 	log.Printf("Updating data: %+v", req)
 
-	err := user_service.UpdateByID(ctx, req)
+	err := s.services.Users.UpdateByID(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +59,7 @@ func (s *userServer) Update(ctx context.Context, req *userAPI.UpdateRequest) (*e
 func (s *userServer) Delete(ctx context.Context, req *userAPI.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("Deleting data: %+v", req)
 
-	err := user_service.DeleteByID(ctx, req.GetId())
+	err := s.services.Users.DeleteByID(ctx, req.GetId())
 	if err != nil {
 		return nil, err
 	}

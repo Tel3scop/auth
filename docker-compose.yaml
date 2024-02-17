@@ -4,19 +4,27 @@ volumes:
   postgres_volume:
 
 services:
-  pg-local:
-    image: postgres:14-alpine3.17
+  db:
+    image: postgres:15-alpine3.17
     env_file:
       - ".env"
     ports:
       - "54321:5432"
     volumes:
       - postgres_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   migrator:
     build:
       context: .
       dockerfile: migration.Dockerfile
+    env_file:
+      - "migration.env"
+    depends_on:
+      - db
+
     restart: on-failure
-    environment:
-      DB_HOST: pg-local

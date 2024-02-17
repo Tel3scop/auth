@@ -3,4 +3,5 @@
 /vendor/
 *.csv
 *.log
-.env
+#.env
+#migration.env
