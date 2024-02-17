@@ -10,7 +10,12 @@ RUN chmod +x /bin/goose
 
 WORKDIR /root
 
-ADD migrations/*.sql migrations/
+# Create the migrations directory to ensure it exists
+RUN mkdir -p migrations
+
+# Copy the entire migrations directory (even if it's empty)
+COPY migrations migrations/
+
 ADD migration.sh .
 ADD migration.env .
 
