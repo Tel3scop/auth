@@ -5,7 +5,7 @@ env:
   REGISTRY: "cr.selcloud.ru/olezhek"
   IMAGE_NAME: "auth-server"
   CONTAINER_NAME: "auth-server-container"
-  DIR: "auth"
+
 on:
   push:
     branches: [ main, master, add-database ]
@@ -55,7 +55,7 @@ jobs:
          known_hosts: ${{ secrets.SERVER_HOST }}
 
       - name: Deploy with rsync
-        run: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ./migrations/** ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:~/$DIR/migrations
+        run: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ./migrations/** ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:~/auth/migrations
 
   image-build-and-push:
     runs-on: ubuntu-latest
@@ -91,7 +91,7 @@ jobs:
           script: |
             # Set up variables
             TAG_NAME=$(echo $GITHUB_SHA | head -c7)
-            sed -i "s/TAG_NAME=.*/TAG_NAME=$TAG_NAME/" $DIR/.env
+            sed -i "s/TAG_NAME=.*/TAG_NAME=$TAG_NAME/" auth/.env
             # Login into Selectel Registry
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} $REGISTRY
            
