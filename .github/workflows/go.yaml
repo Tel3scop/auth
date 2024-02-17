@@ -117,7 +117,7 @@ jobs:
           script: |
             # Set up variables
             TAG_NAME=$(echo $GITHUB_SHA | head -c7)
-            export TAG_NAME=$TAG_NAME
+            sed -i "s/TAG_NAME=.*/TAG_NAME=$TAG_NAME/" .env
             # Login into Selectel Registry
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} $REGISTRY
            
