@@ -140,8 +140,8 @@ jobs:
             # Run a new container from a new image
             docker run -d -p 50051:50051 --name $CONTAINER_NAME -t $REGISTRY/$IMAGE_NAME:$TAG_NAME
 
-             ls -lh
+             ls auth -lh
 
             # Run migrations
-            rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
+            rsync -avz -e "ssh -o StrictHostKeyChecking=no" auth/migrations/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_HOST }}:/migrations/
             docker-compose up -d --force-recreate --build migrator
