@@ -4,7 +4,7 @@ services:
   auth:
     image: cr.selcloud.ru/olezhek/auth-server:${TAG_NAME}
     env_file:
-      - ".env"
+      - "./auth/.env"
     ports:
       - "${GRPC_PORT}:${GRPC_PORT}"
     depends_on:
@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: migration.Dockerfile
     env_file:
-      - "migration.env"
+      - "./auth/migration.env"
     depends_on:
       - db
 

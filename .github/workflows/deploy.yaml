@@ -1,4 +1,4 @@
-name: Go
+name: Deploy server to cloud
 run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
 
 env:
