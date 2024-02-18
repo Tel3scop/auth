@@ -9,6 +9,15 @@ services:
       - "${GRPC_PORT}:${GRPC_PORT}"
     depends_on:
       - db
+  auth-migrator:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    env_file:
+      - "./auth/migration.env"
+    depends_on:
+      - db
+    restart: on-failure
 
   db:
     image: postgres:15-alpine3.17
@@ -23,17 +32,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  migrator:
-    build:
-      context: .
-      dockerfile: migration.Dockerfile
-    env_file:
-      - "./auth/migration.env"
-    depends_on:
-      - db
-
-    restart: on-failure
 
 volumes:
   postgres_volume:

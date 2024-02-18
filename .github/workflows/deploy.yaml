@@ -102,4 +102,4 @@ jobs:
             docker-compose up -d --force-recreate --build auth 
             
             # Run migrations
-            docker-compose up -d --force-recreate --build migrator
+            docker-compose up -d --force-recreate --build auth-migrator
