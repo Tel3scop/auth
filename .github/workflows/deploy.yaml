@@ -5,6 +5,7 @@ env:
   REGISTRY: "cr.selcloud.ru/olezhek"
   IMAGE_NAME: "auth-server"
   CONTAINER_NAME: "auth-server-container"
+  TAG_NAME: 1
 
 on:
   push:
@@ -87,7 +88,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSHKEY }}
-          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,CONTAINER_NAME
+          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,CONTAINER_NAME,TAG_NAME
           script: |
             # Set up variables
             TAG_NAME=$(echo $GITHUB_SHA | head -c7)
