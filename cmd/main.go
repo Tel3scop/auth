@@ -25,10 +25,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	pool, err := pgxpool.Connect(ctx, cfg.Postgres.DSN)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
+
 	defer pool.Close()
 	storageContainer := storages.New(pool)
 	serviceContainer := services.New(cfg, storageContainer)

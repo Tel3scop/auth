@@ -41,6 +41,7 @@ func New() (*Config, error) {
 	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("loading config from env is failed: %w", err)
 	}
+
 	buildDSN(&cfg.Postgres)
 	cfg.GRPC.Address = net.JoinHostPort(cfg.GRPC.Host, cfg.GRPC.Port)
 

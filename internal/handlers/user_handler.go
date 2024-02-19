@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 
 	"github.com/Tel3scop/auth/internal/config"
 	"github.com/Tel3scop/auth/internal/services"
@@ -18,7 +17,6 @@ type userServer struct {
 }
 
 func (s *userServer) Get(ctx context.Context, req *userAPI.GetRequest) (*userAPI.GetResponse, error) {
-	log.Printf("Getting user id: %d", req.GetId())
 	user, err := s.services.Users.GetByID(ctx, req.Id)
 	if err != nil {
 		return nil, err
@@ -35,8 +33,6 @@ func (s *userServer) Get(ctx context.Context, req *userAPI.GetRequest) (*userAPI
 }
 
 func (s *userServer) Create(ctx context.Context, req *userAPI.CreateRequest) (*userAPI.CreateResponse, error) {
-	log.Printf("Creating data: %+v", req)
-
 	createdUserID, err := s.services.Users.Create(ctx, req)
 	if err != nil {
 		return nil, err
@@ -46,8 +42,6 @@ func (s *userServer) Create(ctx context.Context, req *userAPI.CreateRequest) (*u
 }
 
 func (s *userServer) Update(ctx context.Context, req *userAPI.UpdateRequest) (*emptypb.Empty, error) {
-	log.Printf("Updating data: %+v", req)
-
 	err := s.services.Users.UpdateByID(ctx, req)
 	if err != nil {
 		return nil, err
@@ -57,8 +51,6 @@ func (s *userServer) Update(ctx context.Context, req *userAPI.UpdateRequest) (*e
 }
 
 func (s *userServer) Delete(ctx context.Context, req *userAPI.DeleteRequest) (*emptypb.Empty, error) {
-	log.Printf("Deleting data: %+v", req)
-
 	err := s.services.Users.DeleteByID(ctx, req.GetId())
 	if err != nil {
 		return nil, err

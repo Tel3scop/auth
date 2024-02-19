@@ -3,7 +3,6 @@ package users
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/Tel3scop/auth/internal/config"
@@ -36,8 +35,6 @@ func NewService(cfg *config.Config, storages *storages.Storage) Service {
 // Create создание нового пользователя. Если пароль и подтверждение не свпадают - возвращаем 0
 func (s *Service) Create(ctx context.Context, request *userAPI.CreateRequest) (int64, error) {
 	if request.Password != request.PasswordConfirm {
-		log.Printf("passwords not equal")
-
 		return 0, fmt.Errorf("passwords not equal")
 	}
 
@@ -52,7 +49,6 @@ func (s *Service) Create(ctx context.Context, request *userAPI.CreateRequest) (i
 	}
 	createdUserID, err := s.usersStorage.Create(ctx, userData)
 	if err != nil {
-
 		return 0, err
 	}
 
@@ -63,7 +59,6 @@ func (s *Service) Create(ctx context.Context, request *userAPI.CreateRequest) (i
 func (s *Service) GetByID(ctx context.Context, id int64) (entities.User, error) {
 	foundedUser, err := s.usersStorage.GetByID(ctx, id)
 	if err != nil {
-		log.Println(err.Error())
 		return entities.User{}, err
 	}
 
@@ -79,7 +74,6 @@ func (s *Service) UpdateByID(ctx context.Context, request *userAPI.UpdateRequest
 	}
 	_, err := s.usersStorage.UpdateByID(ctx, request.Id, updatingData)
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
 
@@ -90,7 +84,6 @@ func (s *Service) UpdateByID(ctx context.Context, request *userAPI.UpdateRequest
 func (s *Service) DeleteByID(ctx context.Context, id int64) error {
 	err := s.usersStorage.DeleteByID(ctx, id)
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
 
