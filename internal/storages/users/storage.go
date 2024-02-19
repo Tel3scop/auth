@@ -32,13 +32,13 @@ func (t TableStorage) Create(ctx context.Context, userData entities.User) (int64
 
 	query, args, err := builderInsert.ToSql()
 	if err != nil {
-		log.Fatalf("failed to build query: %v", err)
+		log.Printf("failed to build query: %v\n", err)
 	}
 
 	var userID int64
 	err = t.conn.QueryRow(ctx, query, args...).Scan(&userID)
 	if err != nil {
-		log.Fatalf("failed to insert user: %v", err)
+		log.Printf("failed to insert user: %v", err)
 	}
 
 	log.Printf("inserted user with id: %d", userID)
@@ -55,7 +55,7 @@ func (t TableStorage) GetByID(ctx context.Context, userID int64) (entities.User,
 
 	query, args, err := builderSelectOne.ToSql()
 	if err != nil {
-		log.Fatalf("failed to build query: %v", err)
+		log.Printf("failed to build query: %v", err)
 	}
 
 	var (
@@ -66,7 +66,7 @@ func (t TableStorage) GetByID(ctx context.Context, userID int64) (entities.User,
 	)
 	err = t.conn.QueryRow(ctx, query, args...).Scan(&id, &name, &email, &role, &createdAt, &updatedAt)
 	if err != nil {
-		log.Fatalf("failed to select users: %v", err)
+		log.Printf("failed to select users: %v", err)
 	}
 
 	user := entities.User{
@@ -94,13 +94,13 @@ func (t TableStorage) UpdateByID(ctx context.Context, id int64, data entities.Up
 
 	query, args, err := builderUpdateOne.ToSql()
 	if err != nil {
-		log.Fatalf("failed to build query: %v", err)
+		log.Printf("failed to build query: %v", err)
 	}
 
 	var userID int64
 	err = t.conn.QueryRow(ctx, query, args...).Scan(&userID)
 	if err != nil {
-		log.Fatalf("failed to update users: %v", err)
+		log.Printf("failed to update users: %v", err)
 	}
 
 	return userID, nil
