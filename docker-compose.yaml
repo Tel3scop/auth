@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  auth:
+    image: cr.selcloud.ru/olezhek/auth-server:${TAG_NAME}
+    env_file:
+      - "./auth/.env"
+    ports:
+      - "${GRPC_PORT}:${GRPC_PORT}"
+    depends_on:
+      - db
+  auth-migrator:
+    build:
+      context: ./auth
+      dockerfile: migration.Dockerfile
+    env_file:
+      - "./auth/migration.env"
+    depends_on:
+      - db
+    restart: on-failure
+
+  db:
+    image: postgres:15-alpine3.17
+    env_file:
+      - ".env"
+    ports:
+      - "54321:5432"
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_volume:

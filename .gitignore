@@ -4,3 +4,4 @@
 *.csv
 *.log
 .env
+migration.env
