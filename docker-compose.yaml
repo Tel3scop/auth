@@ -11,7 +11,7 @@ services:
       - db
   auth-migrator:
     build:
-      context: .
+      context: ./auth
       dockerfile: migration.Dockerfile
     env_file:
       - "./auth/migration.env"
