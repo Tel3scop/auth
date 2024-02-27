@@ -1,4 +1,4 @@
-package entities
+package model
 
 import (
 	"time"
@@ -8,13 +8,14 @@ import (
 
 // User Структура пользователя
 type User struct {
-	ID        int64     `json:"id"`
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Role     user_v1.Role
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	Role      user_v1.Role
 }
 
 // UpdatingUserData Структура для запрсоа на изменение пользователя
