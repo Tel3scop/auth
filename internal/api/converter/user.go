@@ -1,8 +1,6 @@
 package converter
 
 import (
-	"time"
-
 	"github.com/Tel3scop/auth/internal/model"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -24,12 +22,10 @@ func ToUserResponseFromModel(user *model.User) *userAPI.GetResponse {
 // ToUserModelFromRequest функция получения модели пользователя из запроса
 func ToUserModelFromRequest(request *userAPI.CreateRequest) model.User {
 	return model.User{
-		Name:      request.Name,
-		Email:     request.Email,
-		Password:  request.Password,
-		Role:      request.Role,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Name:     request.Name,
+		Email:    request.Email,
+		Password: request.Password,
+		Role:     request.Role,
 	}
 }
 

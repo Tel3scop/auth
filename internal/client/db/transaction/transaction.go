@@ -9,6 +9,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TxManager интерфейс для создания моков
+type TxManager interface {
+	// ReadCommitted запускает транзакцию с уровнем изоляции ReadCommitted.
+	ReadCommitted(ctx context.Context, f db.Handler) error
+}
+
 type manager struct {
 	db db.Transactor
 }
