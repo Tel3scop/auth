@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/Tel3scop/auth/internal/closer"
 	"github.com/Tel3scop/auth/internal/config"
+	"github.com/Tel3scop/helpers/closer"
 )
 
 // App структура приложения с сервис-провайдером и GRPC-сервером

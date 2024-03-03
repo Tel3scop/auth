@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/Tel3scop/auth/internal/client/db"
-	"github.com/Tel3scop/auth/internal/client/db/prettier"
+	"github.com/Tel3scop/helpers/prettier"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"

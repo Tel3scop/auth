@@ -8,13 +8,13 @@ import (
 	"github.com/Tel3scop/auth/internal/client/db"
 	"github.com/Tel3scop/auth/internal/client/db/pg"
 	"github.com/Tel3scop/auth/internal/client/db/transaction"
-	"github.com/Tel3scop/auth/internal/closer"
 	"github.com/Tel3scop/auth/internal/config"
 	"github.com/Tel3scop/auth/internal/repository"
 	historyChangeRepo "github.com/Tel3scop/auth/internal/repository/history_change"
 	userRepo "github.com/Tel3scop/auth/internal/repository/user"
 	"github.com/Tel3scop/auth/internal/service"
 	userService "github.com/Tel3scop/auth/internal/service/user"
+	"github.com/Tel3scop/helpers/closer"
 )
 
 type serviceProvider struct {

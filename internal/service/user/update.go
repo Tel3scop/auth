@@ -8,10 +8,11 @@ import (
 )
 
 func (s *serv) Update(ctx context.Context, requestID int64, data model.UpdatingUserData) (int64, error) {
+	var userID int64
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		var errTx error
 
-		userID, errTx := s.userRepository.Update(ctx, requestID, data)
+		userID, errTx = s.userRepository.Update(ctx, requestID, data)
 		if errTx != nil {
 			return errTx
 		}
@@ -34,11 +35,6 @@ func (s *serv) Update(ctx context.Context, requestID int64, data model.UpdatingU
 		return nil
 	})
 
-	if err != nil {
-		return 0, err
-	}
-
-	userID, err := s.userRepository.Update(ctx, requestID, data)
 	if err != nil {
 		return 0, err
 	}

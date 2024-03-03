@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/Tel3scop/auth/internal/client/db"
@@ -36,6 +37,9 @@ func NewRepository(db db.Client) repository.UserRepository {
 
 // Create Метод создания нового пользователя.
 func (r *repo) Create(ctx context.Context, dto model.User) (int64, error) {
+	now := time.Now()
+	dto.CreatedAt = now
+	dto.UpdatedAt = now
 	builder := sq.Insert(tableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(columnName, columnPassword, columnEmail, columnRole, columnCreatedAt, columnUpdatedAt).
