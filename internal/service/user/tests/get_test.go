@@ -6,11 +6,11 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/Tel3scop/auth/internal/client/db/transaction"
 	txMocks "github.com/Tel3scop/auth/internal/client/db/transaction/mocks"
 	"github.com/Tel3scop/auth/internal/model"
 	"github.com/Tel3scop/auth/internal/repository"
 	"github.com/Tel3scop/auth/internal/repository/mocks"
+	"github.com/Tel3scop/auth/internal/service"
 	"github.com/Tel3scop/auth/internal/service/user"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
 	"github.com/brianvoe/gofakeit/v6"
@@ -20,6 +20,7 @@ import (
 
 func TestGet(t *testing.T) {
 	t.Parallel()
+	var rolesSlice = []int{1, 2}
 
 	type args struct {
 		ctx  context.Context
@@ -46,7 +47,7 @@ func TestGet(t *testing.T) {
 		err                   error
 		userMockRepository    func(mc *minimock.Controller) repository.UserRepository
 		historyMockRepository func(mc *minimock.Controller) repository.HistoryChangeRepository
-		txMockManager         func(mc *minimock.Controller) transaction.TxManager
+		txMockManager         func(mc *minimock.Controller) service.TxManager
 	}{
 		{
 			name: "Успешный запуск",
@@ -80,7 +81,7 @@ func TestGet(t *testing.T) {
 				mock := mocks.NewHistoryChangeRepositoryMock(mc)
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				return mock
 			},
@@ -102,7 +103,7 @@ func TestGet(t *testing.T) {
 				mock := mocks.NewHistoryChangeRepositoryMock(mc)
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				return mock
 			},

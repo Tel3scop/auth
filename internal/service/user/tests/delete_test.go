@@ -6,12 +6,12 @@ import (
 	"testing"
 
 	"github.com/Tel3scop/auth/internal/client/db"
-	"github.com/Tel3scop/auth/internal/client/db/transaction"
 	txMocks "github.com/Tel3scop/auth/internal/client/db/transaction/mocks"
 	"github.com/Tel3scop/auth/internal/model"
 	"github.com/Tel3scop/auth/internal/repository"
 	"github.com/Tel3scop/auth/internal/repository/converter"
 	"github.com/Tel3scop/auth/internal/repository/mocks"
+	"github.com/Tel3scop/auth/internal/service"
 	"github.com/Tel3scop/auth/internal/service/user"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
@@ -39,7 +39,7 @@ func TestDelete(t *testing.T) {
 		err                   error
 		userMockRepository    func(mc *minimock.Controller) repository.UserRepository
 		historyMockRepository func(mc *minimock.Controller) repository.HistoryChangeRepository
-		txMockManager         func(mc *minimock.Controller) transaction.TxManager
+		txMockManager         func(mc *minimock.Controller) service.TxManager
 	}{
 		{
 			name: "Успешный запуск",
@@ -59,7 +59,7 @@ func TestDelete(t *testing.T) {
 				mock.CreateMock.Expect(ctx, *newHistory).Return(0, nil)
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				mock.ReadCommittedMock.Set(func(ctx context.Context, f db.Handler) error {
 					return f(ctx)
@@ -83,7 +83,7 @@ func TestDelete(t *testing.T) {
 				mock := mocks.NewHistoryChangeRepositoryMock(mc)
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				mock.ReadCommittedMock.Set(func(ctx context.Context, f db.Handler) error {
 					return f(ctx)
@@ -109,7 +109,7 @@ func TestDelete(t *testing.T) {
 				mock.CreateMock.Expect(ctx, *newHistory).Return(0, fmt.Errorf("не удалось создать запись в истории изменений"))
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				mock.ReadCommittedMock.Set(func(ctx context.Context, f db.Handler) error {
 					return f(ctx)

@@ -7,13 +7,13 @@ import (
 	"testing"
 
 	"github.com/Tel3scop/auth/internal/client/db"
-	"github.com/Tel3scop/auth/internal/client/db/transaction"
 	txMocks "github.com/Tel3scop/auth/internal/client/db/transaction/mocks"
 	"github.com/Tel3scop/auth/internal/model"
 	"github.com/Tel3scop/auth/internal/repository"
 	"github.com/Tel3scop/auth/internal/repository/converter"
 	"github.com/Tel3scop/auth/internal/repository/mocks"
 	modelRepo "github.com/Tel3scop/auth/internal/repository/user/model"
+	"github.com/Tel3scop/auth/internal/service"
 	"github.com/Tel3scop/auth/internal/service/user"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
 	"github.com/brianvoe/gofakeit/v6"
@@ -23,6 +23,7 @@ import (
 
 func TestUpdate(t *testing.T) {
 	t.Parallel()
+	var rolesSlice = []int{1, 2}
 
 	type args struct {
 		ctx  context.Context
@@ -49,7 +50,7 @@ func TestUpdate(t *testing.T) {
 		err                   error
 		userMockRepository    func(mc *minimock.Controller) repository.UserRepository
 		historyMockRepository func(mc *minimock.Controller) repository.HistoryChangeRepository
-		txMockManager         func(mc *minimock.Controller) transaction.TxManager
+		txMockManager         func(mc *minimock.Controller) service.TxManager
 	}{
 		{
 			name: "Успешный запуск",
@@ -92,7 +93,7 @@ func TestUpdate(t *testing.T) {
 				mock.CreateMock.Expect(ctx, *newHistory).Return(0, nil)
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				mock.ReadCommittedMock.Set(func(ctx context.Context, f db.Handler) error {
 					return f(ctx)
@@ -122,7 +123,7 @@ func TestUpdate(t *testing.T) {
 				mock := mocks.NewHistoryChangeRepositoryMock(mc)
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				mock.ReadCommittedMock.Set(func(ctx context.Context, f db.Handler) error {
 					return f(ctx)
@@ -153,7 +154,7 @@ func TestUpdate(t *testing.T) {
 				mock := mocks.NewHistoryChangeRepositoryMock(mc)
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				mock.ReadCommittedMock.Set(func(ctx context.Context, f db.Handler) error {
 					return f(ctx)
@@ -202,7 +203,7 @@ func TestUpdate(t *testing.T) {
 				mock.CreateMock.Expect(ctx, *newHistory).Return(0, fmt.Errorf("не удалось создать запись в истории изменений"))
 				return mock
 			},
-			txMockManager: func(mc *minimock.Controller) transaction.TxManager {
+			txMockManager: func(mc *minimock.Controller) service.TxManager {
 				mock := txMocks.NewTxManagerMock(mc)
 				mock.ReadCommittedMock.Set(func(ctx context.Context, f db.Handler) error {
 					return f(ctx)
