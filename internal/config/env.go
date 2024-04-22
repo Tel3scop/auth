@@ -13,6 +13,8 @@ type Config struct {
 	Environment string `env:"ENV" envDefault:"local"`
 	Postgres    Postgres
 	GRPC        GRPC
+	HTTP        HTTP
+	Swagger     Swagger
 }
 
 // Postgres конфиг подключения к БД
@@ -35,6 +37,20 @@ type GRPC struct {
 	Address  string
 }
 
+// HTTP конфиг подключения к grpc
+type HTTP struct {
+	Host    string `env:"HTTP_HOST" envDefault:"localhost"`
+	Port    string `env:"HTTP_PORT" envDefault:"8080"`
+	Address string
+}
+
+// Swagger конфиг
+type Swagger struct {
+	Host    string `env:"SWAGGER_HOST" envDefault:"localhost"`
+	Port    string `env:"SWAGGER_PORT" envDefault:"8081"`
+	Address string
+}
+
 // New создаем новый конфиг
 func New() (*Config, error) {
 	cfg := &Config{}
@@ -44,6 +60,8 @@ func New() (*Config, error) {
 
 	buildDSN(&cfg.Postgres)
 	cfg.GRPC.Address = net.JoinHostPort(cfg.GRPC.Host, cfg.GRPC.Port)
+	cfg.HTTP.Address = net.JoinHostPort(cfg.HTTP.Host, cfg.HTTP.Port)
+	cfg.Swagger.Address = net.JoinHostPort(cfg.Swagger.Host, cfg.Swagger.Port)
 
 	return cfg, nil
 }

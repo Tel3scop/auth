@@ -5,3 +5,5 @@
 *.log
 .env
 migration.env
+coverage.out
+vendor.protogen

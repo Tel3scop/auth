@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RUN" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="auth_service" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="GRPC_HOST" value="localhost" />
+      <env name="GRPC_PORT" value="50051" />
+      <env name="GRPC_PROTOCOL" value="tcp" />
+      <env name="MIGRATION_DIR" value="./migrations" />
+      <env name="POSTGRES_DB" value="auth" />
+      <env name="POSTGRES_HOST" value="localhost" />
+      <env name="POSTGRES_MAX_OPEN_CONNS" value="100" />
+      <env name="POSTGRES_PASSWORD" value="password" />
+      <env name="POSTGRES_PORT" value="54321" />
+      <env name="POSTGRES_SSLMODE" value="disable" />
+      <env name="POSTGRES_USER" value="user" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="github.com/Tel3scop/auth/cmd" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/cmd/main.go" />
+    <method v="2" />
+  </configuration>
+</component>
