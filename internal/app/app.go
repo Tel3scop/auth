@@ -7,10 +7,13 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/rakyll/statik/fs"
 	"github.com/rs/cors"
 
+	"github.com/Tel3scop/auth/internal/closer"
+	"github.com/Tel3scop/auth/internal/config"
 	"github.com/Tel3scop/auth/internal/interceptor"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -18,8 +21,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/Tel3scop/auth/internal/closer"
-	"github.com/Tel3scop/auth/internal/config"
+	// Register statik for swagger UI
 	_ "github.com/Tel3scop/auth/statik"
 )
 
@@ -162,8 +164,9 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	})
 
 	a.httpServer = &http.Server{
-		Addr:    a.serviceProvider.Config().HTTP.Address,
-		Handler: corsMiddleware.Handler(mux),
+		Addr:              a.serviceProvider.Config().HTTP.Address,
+		Handler:           corsMiddleware.Handler(mux),
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	return nil
@@ -180,8 +183,9 @@ func (a *App) initSwaggerServer(_ context.Context) error {
 	mux.HandleFunc("/api.swagger.json", serveSwaggerFile("/api.swagger.json"))
 
 	a.swaggerServer = &http.Server{
-		Addr:    a.serviceProvider.Config().Swagger.Address,
-		Handler: mux,
+		Addr:              a.serviceProvider.Config().Swagger.Address,
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	return nil
@@ -210,7 +214,7 @@ func (a *App) runSwaggerServer() error {
 }
 
 func serveSwaggerFile(path string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		log.Printf("Serving swagger file: %s", path)
 
 		statikFs, err := fs.New()
@@ -226,7 +230,12 @@ func serveSwaggerFile(path string) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer file.Close()
+		defer func(file http.File) {
+			err = file.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(file)
 
 		log.Printf("Read swagger file: %s", path)
 
