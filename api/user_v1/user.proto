@@ -32,7 +32,7 @@ service UserV1 {
   // Создать нового пользователя
   rpc Create(CreateRequest) returns (CreateResponse){
     option (google.api.http) = {
-      post: "/user/v1/create"
+      post: "/user/v1"
       body: "*"
     };
   }

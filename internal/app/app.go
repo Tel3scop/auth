@@ -185,7 +185,7 @@ func (a *App) initSwaggerServer(_ context.Context) error {
 	a.swaggerServer = &http.Server{
 		Addr:              a.serviceProvider.Config().Swagger.Address,
 		Handler:           mux,
-		ReadHeaderTimeout: 3 * time.Second,
+		ReadHeaderTimeout: time.Duration(a.serviceProvider.Config().Swagger.Timeout) * time.Second,
 	}
 
 	return nil

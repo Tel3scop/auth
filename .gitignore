@@ -7,3 +7,4 @@
 migration.env
 coverage.out
 vendor.protogen
+.run

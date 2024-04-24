@@ -49,6 +49,7 @@ type Swagger struct {
 	Host    string `env:"SWAGGER_HOST" envDefault:"localhost"`
 	Port    string `env:"SWAGGER_PORT" envDefault:"8081"`
 	Address string
+	Timeout int `env:"SWAGGER_TIMEOUT" envDefault:"5"`
 }
 
 // New создаем новый конфиг
