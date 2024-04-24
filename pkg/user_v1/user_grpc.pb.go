@@ -19,10 +19,11 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// UserV1Client is the client API for UserV1 service1.
+// UserV1Client is the client API for UserV1 service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserV1Client interface {
+	// Создать нового пользователя
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -73,10 +74,11 @@ func (c *userV1Client) Delete(ctx context.Context, in *DeleteRequest, opts ...gr
 	return out, nil
 }
 
-// UserV1Server is the server API for UserV1 service1.
+// UserV1Server is the server API for UserV1 service.
 // All implementations must embed UnimplementedUserV1Server
 // for forward compatibility
 type UserV1Server interface {
+	// Создать нового пользователя
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	Update(context.Context, *UpdateRequest) (*emptypb.Empty, error)
@@ -102,7 +104,7 @@ func (UnimplementedUserV1Server) Delete(context.Context, *DeleteRequest) (*empty
 }
 func (UnimplementedUserV1Server) mustEmbedUnimplementedUserV1Server() {}
 
-// UnsafeUserV1Server may be embedded to opt out of forward compatibility for this service1.
+// UnsafeUserV1Server may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to UserV1Server will
 // result in compilation errors.
 type UnsafeUserV1Server interface {
@@ -185,7 +187,7 @@ func _UserV1_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-// UserV1_ServiceDesc is the grpc.ServiceDesc for UserV1 service1.
+// UserV1_ServiceDesc is the grpc.ServiceDesc for UserV1 service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserV1_ServiceDesc = grpc.ServiceDesc{

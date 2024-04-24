@@ -4,15 +4,55 @@ package user_v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/Tel3scop/auth/pkg/user_v1;user_v1";
 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Auth API"
+    version: "1.0.0"
+    contact: {
+      name: "Evgeniy Evstifeev"
+      email: "evstifeevea@gmail.com"
+    };
+  };
+
+  host: "localhost:8080",
+  schemes: HTTP,
+  schemes: HTTPS,
+  consumes: "application/json",
+  produces: "application/json",
+};
+
+
 service UserV1 {
-  rpc Create(CreateRequest) returns (CreateResponse);
-  rpc Get(GetRequest) returns (GetResponse);
-  rpc Update(UpdateRequest) returns (google.protobuf.Empty);
-  rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
+  // Создать нового пользователя
+  rpc Create(CreateRequest) returns (CreateResponse){
+    option (google.api.http) = {
+      post: "/user/v1"
+      body: "*"
+    };
+  }
+  rpc Get(GetRequest) returns (GetResponse){
+    option (google.api.http) = {
+      get: "/user/v1"
+    };
+  }
+
+  rpc Update(UpdateRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      patch: "/user/v1"
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/user/v1"
+    };
+  }
 }
 
 enum Role {
@@ -22,10 +62,15 @@ enum Role {
 }
 
 message CreateRequest {
-  string name = 1;
-  string email = 2;
-  string password = 3;
-  string password_confirm = 4;
+  // Имя пользователя
+  string name = 1 [(validate.rules).string = {min_len:1, max_len:50}];
+  // Электронная почта
+  string email = 2 [(validate.rules).string.email = true];
+  // Пароль
+  string password = 3 [(validate.rules).string = {min_len:8, max_len:50}];
+  // Подтверждение
+  string password_confirm = 4 [(validate.rules).string = {min_len:8, max_len:50}];
+  // Роль
   Role role = 5;
 }
 
