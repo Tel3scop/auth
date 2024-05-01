@@ -15,6 +15,8 @@ import (
 	"github.com/Tel3scop/auth/internal/closer"
 	"github.com/Tel3scop/auth/internal/config"
 	"github.com/Tel3scop/auth/internal/interceptor"
+	accessAPI "github.com/Tel3scop/auth/pkg/access_v1"
+	authAPI "github.com/Tel3scop/auth/pkg/auth_v1"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -124,6 +126,8 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 	userAPI.RegisterUserV1Server(a.grpcServer, a.serviceProvider.UserImpl(ctx))
+	authAPI.RegisterAuthV1Server(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
+	accessAPI.RegisterAccessV1Server(a.grpcServer, a.serviceProvider.AccessImpl(ctx))
 
 	return nil
 }
@@ -180,7 +184,9 @@ func (a *App) initSwaggerServer(_ context.Context) error {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.StripPrefix("/", http.FileServer(statikFs)))
-	mux.HandleFunc("/api.swagger.json", serveSwaggerFile("/api.swagger.json"))
+	mux.HandleFunc("/api_user.swagger.json", serveSwaggerFile("/api_user.swagger.json"))
+	mux.HandleFunc("/api_auth.swagger.json", serveSwaggerFile("/api_auth.swagger.json"))
+	mux.HandleFunc("/api_access.swagger.json", serveSwaggerFile("/api_access.swagger.json"))
 
 	a.swaggerServer = &http.Server{
 		Addr:              a.serviceProvider.Config().Swagger.Address,

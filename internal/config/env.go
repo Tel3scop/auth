@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/caarlos0/env/v10"
 )
@@ -15,6 +16,7 @@ type Config struct {
 	GRPC        GRPC
 	HTTP        HTTP
 	Swagger     Swagger
+	Encrypt     Encrypt
 }
 
 // Postgres конфиг подключения к БД
@@ -52,17 +54,29 @@ type Swagger struct {
 	Timeout int `env:"SWAGGER_TIMEOUT" envDefault:"5"`
 }
 
+// Encrypt конфиг с секретами
+type Encrypt struct {
+	RefreshTokenSecretKey           string `env:"REFRESH_TOKEN_SECRET"`
+	AccessTokenSecretKey            string `env:"ACCESS_TOKEN_SECRET"`
+	RefreshTokenExpirationInMinutes int    `env:"REFRESH_TOKEN_EXPIRATION" envDefault:"60"`
+	RefreshTokenExpiration          time.Duration
+	AccessTokenExpirationInMinutes  int `env:"ACCESS_TOKEN_EXPIRATION" envDefault:"5"`
+	AccessTokenExpiration           time.Duration
+	AuthPrefix                      string `env:"AUTH_PREFIX" envDefault:"Bearer "`
+}
+
 // New создаем новый конфиг
 func New() (*Config, error) {
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("loading config from env is failed: %w", err)
 	}
-
 	buildDSN(&cfg.Postgres)
 	cfg.GRPC.Address = net.JoinHostPort(cfg.GRPC.Host, cfg.GRPC.Port)
 	cfg.HTTP.Address = net.JoinHostPort(cfg.HTTP.Host, cfg.HTTP.Port)
 	cfg.Swagger.Address = net.JoinHostPort(cfg.Swagger.Host, cfg.Swagger.Port)
+	cfg.Encrypt.AccessTokenExpiration = time.Duration(cfg.Encrypt.AccessTokenExpirationInMinutes) * time.Minute
+	cfg.Encrypt.RefreshTokenExpiration = time.Duration(cfg.Encrypt.RefreshTokenExpirationInMinutes) * time.Minute
 
 	return cfg, nil
 }

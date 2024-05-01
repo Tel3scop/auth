@@ -12,8 +12,8 @@ type Implementation struct {
 }
 
 // NewImplementation новый экземпляр структуры Implementation
-func NewImplementation(noteService service.UserService) *Implementation {
+func NewImplementation(userService service.UserService) *Implementation {
 	return &Implementation{
-		userService: noteService,
+		userService: userService,
 	}
 }

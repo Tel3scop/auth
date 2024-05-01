@@ -13,3 +13,15 @@ type UserService interface {
 	Update(ctx context.Context, userID int64, data model.UpdatingUserData) (int64, error)
 	Delete(ctx context.Context, id int64) error
 }
+
+// AccessService интерфейс для использования в сервисе
+type AccessService interface {
+	Check(ctx context.Context, endpoint string, token string) error
+}
+
+// AuthService интерфейс для использования в сервисе
+type AuthService interface {
+	Login(ctx context.Context, username, password string) (*string, error)
+	GetRefreshToken(ctx context.Context, oldRefreshToken string) (*string, error)
+	GetAccessToken(ctx context.Context, refreshToken string) (*string, error)
+}
