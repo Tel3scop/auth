@@ -15,7 +15,7 @@ func ToUserResponseFromModel(user *model.User) *userAPI.GetResponse {
 		Name:      user.Name,
 		Email:     user.Email,
 		Password:  user.Password,
-		Role:      user.Role,
+		Role:      userAPI.Role(user.Role),
 		CreatedAt: timestamppb.New(user.CreatedAt),
 		UpdatedAt: timestamppb.New(user.UpdatedAt),
 	}
@@ -27,7 +27,7 @@ func ToUserModelFromRequest(request *userAPI.CreateRequest) model.User {
 		Name:      request.Name,
 		Email:     request.Email,
 		Password:  request.Password,
-		Role:      request.Role,
+		Role:      model.Role(request.Role),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

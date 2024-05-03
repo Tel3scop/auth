@@ -8,6 +8,11 @@ import (
 	"github.com/caarlos0/env/v10"
 )
 
+// Provider предоставляет интерфейс для получения конфигурации.
+type Provider interface {
+	Config() *Config
+}
+
 // Config общий конфиг
 type Config struct {
 	DebugMode   bool   `env:"DEBUG_MODE" envDefault:"false"`
@@ -17,6 +22,11 @@ type Config struct {
 	HTTP        HTTP
 	Swagger     Swagger
 	Encrypt     Encrypt
+}
+
+// Config возвращаем сам конфиг
+func (c Config) Config() *Config {
+	return &c
 }
 
 // Postgres конфиг подключения к БД

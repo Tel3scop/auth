@@ -48,12 +48,10 @@ func (s *serviceProvider) Config() *config.Config {
 	if s.config == nil {
 		cfg, err := config.New()
 		if err != nil {
-			log.Fatalf("failed to get pg config: %s", err.Error())
+			log.Fatalf("failed to get config: %s", err.Error())
 		}
-
 		s.config = cfg
 	}
-
 	return s.config
 }
 
@@ -123,10 +121,9 @@ func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 	if s.authService == nil {
 		s.authService = authService.NewService(
-			s.config,
+			s.Config(),
 			s.UserRepository(ctx),
 			s.HistoryChangeRepository(ctx),
-			s.TxManager(ctx),
 		)
 	}
 
@@ -136,10 +133,9 @@ func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 func (s *serviceProvider) AccessService(ctx context.Context) service.AccessService {
 	if s.accessService == nil {
 		s.accessService = accessService.NewService(
-			s.config,
+			s.Config(),
 			s.AccessRepository(ctx),
 			s.HistoryChangeRepository(ctx),
-			s.TxManager(ctx),
 		)
 	}
 
@@ -156,7 +152,7 @@ func (s *serviceProvider) UserImpl(ctx context.Context) *user.Implementation {
 
 func (s *serviceProvider) AccessImpl(ctx context.Context) *access.Implementation {
 	if s.accessImpl == nil {
-		s.accessImpl = access.NewImplementation(s.config, s.AccessService(ctx))
+		s.accessImpl = access.NewImplementation(s.Config(), s.AccessService(ctx))
 	}
 
 	return s.accessImpl

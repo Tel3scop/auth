@@ -8,8 +8,7 @@ import (
 )
 
 func (s *serv) Check(ctx context.Context, endpoint string, token string) error {
-
-	claims, err := utils.VerifyToken(token, []byte(s.cfg.Encrypt.AccessTokenSecretKey))
+	claims, err := utils.VerifyToken(token, []byte(s.cfg.Config().Encrypt.AccessTokenSecretKey))
 	if err != nil {
 		return fmt.Errorf("access token is invalid")
 	}

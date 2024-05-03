@@ -88,7 +88,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 	return converter.ToUserModelFromRepo(user), nil
 }
 
-// GetPasswordByUsername получение пользователя по columnName. При его отсутствии возвращаем пустую структуру.
+// GetUserByUsername получение пользователя по columnName. При его отсутствии возвращаем пустую структуру.
 func (r *repo) GetUserByUsername(ctx context.Context, username string) (*model.User, error) {
 	builder := sq.Select(columnID, columnName, columnPassword, columnEmail, columnRole, columnCreatedAt, columnUpdatedAt).
 		PlaceholderFormat(sq.Dollar).

@@ -6,6 +6,18 @@ import (
 	"github.com/Tel3scop/auth/pkg/user_v1"
 )
 
+// Role используется для ограничения доступных ролей
+type Role int64
+
+const (
+	// RoleUnspecified неиспользуемая роль
+	RoleUnspecified Role = iota
+	// RoleUser пользователь
+	RoleUser
+	// RoleAdmin администратор
+	RoleAdmin
+)
+
 // User Структура пользователя
 type User struct {
 	ID                int64  `json:"id"`
@@ -13,7 +25,7 @@ type User struct {
 	Email             string `json:"email"`
 	Password          string `json:"password"`
 	EncryptedPassword []byte `json:"-"`
-	Role              user_v1.Role
+	Role              Role
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
