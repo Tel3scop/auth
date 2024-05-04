@@ -12,7 +12,7 @@ func ToUserModelFromRepo(info modelRepo.User) *model.User {
 		Name:      info.Name,
 		Email:     info.Email,
 		Password:  info.Password,
-		Role:      info.Role,
+		Role:      model.Role(info.Role),
 		CreatedAt: info.CreatedAt,
 		UpdatedAt: info.UpdatedAt,
 	}

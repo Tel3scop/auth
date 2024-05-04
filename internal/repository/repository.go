@@ -10,6 +10,7 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, dto model.User) (int64, error)
 	Get(ctx context.Context, id int64) (*model.User, error)
+	GetUserByUsername(ctx context.Context, username string) (*model.User, error)
 	Update(ctx context.Context, userID int64, data model.UpdatingUserData) (int64, error)
 	Delete(ctx context.Context, id int64) error
 }
@@ -17,4 +18,9 @@ type UserRepository interface {
 // HistoryChangeRepository интерфейс репозитория истории изменения
 type HistoryChangeRepository interface {
 	Create(ctx context.Context, dto model.HistoryChange) (int64, error)
+}
+
+// AccessRepository интерфейс репозитория доступов
+type AccessRepository interface {
+	Check(ctx context.Context, endpoint string, roleID int64) error
 }

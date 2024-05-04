@@ -1,3 +1,4 @@
+include .env
 LOCAL_BIN:=$(CURDIR)/bin
 
 .PHONY: help
@@ -30,6 +31,8 @@ get-deps: ## get dependencies
 generate: ## generate handlers
 	mkdir -p pkg/swagger
 	make generate-user-api
+	make generate-auth-api
+	make generate-access-api
 	$(LOCAL_BIN)/statik -src=pkg/swagger/ -include='*.css,*.html,*.js,*.json,*.png'
 
 .PHONY: generate-user-api
@@ -44,18 +47,50 @@ generate-user-api:  ## generate handlers for /api/user
 	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
 	--grpc-gateway_out=pkg/user_v1 --grpc-gateway_opt=paths=source_relative \
 	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
-	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
+	--openapiv2_out=allow_merge=true,merge_file_name=api_user:pkg/swagger \
 	--plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
 	api/user_v1/user.proto
 
+.PHONY: generate-auth-api
+generate-auth-api:  ## generate handlers for /api/auth
+	mkdir -p pkg/auth_v1
+	protoc --proto_path api/auth_v1 --proto_path vendor.protogen \
+	--go_out=pkg/auth_v1 --go_opt=paths=source_relative \
+	--plugin=protoc-gen-go=bin/protoc-gen-go \
+	--go-grpc_out=pkg/auth_v1 --go-grpc_opt=paths=source_relative \
+	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
+	--validate_out lang=go:pkg/auth_v1 --validate_opt=paths=source_relative \
+	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
+	--grpc-gateway_out=pkg/auth_v1 --grpc-gateway_opt=paths=source_relative \
+	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
+	--openapiv2_out=allow_merge=true,merge_file_name=api_auth:pkg/swagger \
+	--plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
+	api/auth_v1/auth.proto
+
+.PHONY: generate-access-api
+generate-access-api:  ## generate handlers for /api/access
+	mkdir -p pkg/access_v1
+	protoc --proto_path api/access_v1 --proto_path vendor.protogen \
+	--go_out=pkg/access_v1 --go_opt=paths=source_relative \
+	--plugin=protoc-gen-go=bin/protoc-gen-go \
+	--go-grpc_out=pkg/access_v1 --go-grpc_opt=paths=source_relative \
+	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
+	--validate_out lang=go:pkg/access_v1 --validate_opt=paths=source_relative \
+	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
+	--grpc-gateway_out=pkg/access_v1 --grpc-gateway_opt=paths=source_relative \
+	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
+	--openapiv2_out=allow_merge=true,merge_file_name=api_access:pkg/swagger \
+	--plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
+	api/access_v1/access.proto
+
 local-migration-status:
-	goose -dir ${MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} status -v
+	goose -dir ${MIGRATION_DIR} postgres ${GOOSE_DSN} status -v
 
 local-migration-up:
-	goose -dir ${MIGRATION_DIR} postgres  "host=${POSTGRES_HOST} port=${POSTGRES_PORT} dbname=${POSTGRES_DB} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=${POSTGRES_SSLMODE}" up -v
+	goose -dir ${MIGRATION_DIR} postgres ${GOOSE_DSN} up -v
 
 local-migration-down:
-	goose -dir ${MIGRATION_DIR} postgres  "host=${POSTGRES_HOST} port=${POSTGRES_PORT} dbname=${POSTGRES_DB} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=${POSTGRES_SSLMODE}" down -v
+	goose -dir ${MIGRATION_DIR} postgres ${GOOSE_DSN} down -v
 
 create-migration:
 	if [ -z "$(name)" ]; then \
@@ -68,7 +103,6 @@ up:
 	docker-compose up -d
 down:
 	docker-compose down
-
 
 vendor-proto:
 		@if [ ! -d vendor.protogen/validate ]; then \

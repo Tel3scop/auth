@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package auth_v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/Tel3scop/auth/pkg/auth_v1;auth_v1";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Auth API"
+    version: "1.0.0"
+    contact: {
+      name: "Evgeniy Evstifeev"
+      email: "evstifeevea@gmail.com"
+    };
+  };
+
+  host: "localhost:8080",
+  schemes: HTTP,
+  schemes: HTTPS,
+  consumes: "application/json",
+  produces: "application/json",
+};
+
+
+service AuthV1 {
+  // Создать нового пользователя
+  rpc Login(LoginRequest) returns (LoginResponse){
+    option (google.api.http) = {
+      post: "/auth/v1/login"
+      body: "*"
+    };
+  }
+  rpc GetRefreshToken(GetRefreshTokenRequest) returns (GetRefreshTokenResponse){
+    option (google.api.http) = {
+      post: "/auth/v1/refresh"
+      body: "*"
+    };
+  }
+
+  rpc GetAccessToken(GetAccessTokenRequest) returns (GetAccessTokenResponse){
+    option (google.api.http) = {
+      get: "/auth/v1/access"
+    };
+  }
+}
+
+
+message LoginRequest {
+  // Имя пользователя
+  string username = 1 [(validate.rules).string = {min_len:1, max_len:50}];
+  // Пароль
+  string password = 3 [(validate.rules).string = {min_len:8, max_len:50}];
+}
+
+message LoginResponse {
+  // Refresh Token
+  string refresh_token = 1;
+}
+
+message GetRefreshTokenRequest {
+  // Текущий Refresh Token
+  string old_refresh_token = 1;
+}
+
+message GetRefreshTokenResponse {
+  // Новый Refresh Token
+  string refresh_token = 1;
+}
+
+message GetAccessTokenRequest {
+  // Текущий Refresh Token
+  string refresh_token = 1;
+}
+
+message GetAccessTokenResponse {
+  // Access Token
+  string access_token = 1;
+}
