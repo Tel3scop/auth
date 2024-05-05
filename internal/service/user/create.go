@@ -6,14 +6,18 @@ import (
 
 	"github.com/Tel3scop/auth/internal/model"
 	"github.com/Tel3scop/auth/internal/repository/converter"
+	"github.com/Tel3scop/helpers/logger"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *serv) Create(ctx context.Context, dto model.User) (int64, error) {
+	logger.Info("Creating user...", zap.String("name", dto.Name), zap.String("email", dto.Email))
+
 	var id int64
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(dto.Password), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Printf("cannot hash password %s:%s %s", dto.Name, dto.Password, err)
+		logger.Error("cannot hash password", zap.String("name", dto.Name), zap.String("password", dto.Password), zap.String("email", dto.Email), zap.Error(err))
 		return id, fmt.Errorf("не удалось обработать пароль")
 	}
 
@@ -47,5 +51,6 @@ func (s *serv) Create(ctx context.Context, dto model.User) (int64, error) {
 		return 0, err
 	}
 
+	logger.Info("User created", zap.Int64("id", id), zap.String("name", dto.Name), zap.String("email", dto.Email))
 	return id, nil
 }

@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/Tel3scop/auth/internal/api/converter"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
@@ -18,8 +17,6 @@ func (i *Implementation) Create(ctx context.Context, request *userAPI.CreateRequ
 	if err != nil {
 		return nil, err
 	}
-
-	log.Printf("inserted user with id: %d", id)
 
 	return &userAPI.CreateResponse{
 		Id: id,

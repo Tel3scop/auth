@@ -7,6 +7,8 @@ import (
 	"github.com/Tel3scop/auth/internal/client/db"
 	"github.com/Tel3scop/auth/internal/model"
 	"github.com/Tel3scop/auth/internal/repository"
+	"github.com/Tel3scop/helpers/logger"
+	"go.uber.org/zap"
 )
 
 const (
@@ -38,6 +40,7 @@ func (r *repo) Create(ctx context.Context, dto model.HistoryChange) (int64, erro
 
 	query, args, err := builder.ToSql()
 	if err != nil {
+		logger.Error("cannot create query", zap.Any("model", dto), zap.Error(err))
 		return 0, err
 	}
 
@@ -49,6 +52,7 @@ func (r *repo) Create(ctx context.Context, dto model.HistoryChange) (int64, erro
 	var id int64
 	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&id)
 	if err != nil {
+		logger.Error("cannot execute query", zap.Any("model", dto), zap.Error(err))
 		return 0, err
 	}
 
