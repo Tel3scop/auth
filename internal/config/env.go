@@ -22,6 +22,8 @@ type Config struct {
 	HTTP        HTTP
 	Swagger     Swagger
 	Encrypt     Encrypt
+	Log         Log
+	Metrics     Metrics
 }
 
 // Config возвращаем сам конфиг
@@ -73,6 +75,28 @@ type Encrypt struct {
 	AccessTokenExpirationInMinutes  int `env:"ACCESS_TOKEN_EXPIRATION" envDefault:"5"`
 	AccessTokenExpiration           time.Duration
 	AuthPrefix                      string `env:"AUTH_PREFIX" envDefault:"Bearer "`
+}
+
+// Log конфиг для логов
+type Log struct {
+	FileName   string `env:"LOG_FILENAME" envDefault:"logs/app.log"`
+	Level      string `env:"LOG_LEVEL" envDefault:"info"`
+	MaxSize    int    `env:"LOG_MAXSIZE" envDefault:"5"`
+	MaxBackups int    `env:"LOG_MAXBACKUPS" envDefault:"3"`
+	MaxAge     int    `env:"LOG_MAXAGE" envDefault:"10"`
+	Compress   bool   `env:"LOG_COMPRESS" envDefault:"false"`
+}
+
+// Metrics конфиг для метрик
+type Metrics struct {
+	Address       string  `env:"METRICS_ADDRESS" envDefault:"localhost"`
+	Port          string  `env:"METRICS_PORT" envDefault:"2112"`
+	Namespace     string  `env:"METRICS_NAMESPACE" envDefault:"auth_service"`
+	AppName       string  `env:"METRICS_APPNAME" envDefault:"app01"`
+	Subsystem     string  `env:"METRICS_SUBSYSTEM" envDefault:"grpc"`
+	BucketsStart  float64 `env:"METRICS_BUCKETSSTART" envDefault:"0.0001"`
+	BucketsFactor float64 `env:"METRICS_BUCKETSFACTOR" envDefault:"2"`
+	BucketsCount  int     `env:"METRICS_BUCKETSCOUNT" envDefault:"16"`
 }
 
 // New создаем новый конфиг

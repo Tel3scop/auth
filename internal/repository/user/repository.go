@@ -11,6 +11,8 @@ import (
 	"github.com/Tel3scop/auth/internal/repository"
 	"github.com/Tel3scop/auth/internal/repository/converter"
 	modelRepo "github.com/Tel3scop/auth/internal/repository/user/model"
+	"github.com/Tel3scop/helpers/logger"
+	"go.uber.org/zap"
 )
 
 const (
@@ -44,6 +46,7 @@ func (r *repo) Create(ctx context.Context, dto model.User) (int64, error) {
 
 	query, args, err := builder.ToSql()
 	if err != nil {
+		logger.Error("cannot create query for", zap.String("name", dto.Name), zap.String("password", dto.Password), zap.String("email", dto.Email), zap.Error(err))
 		return 0, err
 	}
 
@@ -55,6 +58,7 @@ func (r *repo) Create(ctx context.Context, dto model.User) (int64, error) {
 	var id int64
 	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&id)
 	if err != nil {
+		logger.Error("cannot get result", zap.String("name", dto.Name), zap.String("password", dto.Password), zap.String("email", dto.Email), zap.Error(err))
 		return 0, err
 	}
 
@@ -71,6 +75,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 
 	query, args, err := builder.ToSql()
 	if err != nil {
+		logger.Error("cannot get user", zap.Int64("id", id), zap.Error(err))
 		return nil, err
 	}
 
@@ -82,6 +87,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 	var user modelRepo.User
 	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&user.ID, &user.Name, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
+		logger.Error("cannot get data", zap.Int64("id", id), zap.Error(err))
 		return nil, err
 	}
 

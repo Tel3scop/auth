@@ -9,16 +9,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rakyll/statik/fs"
-	"github.com/rs/cors"
-
 	"github.com/Tel3scop/auth/internal/closer"
 	"github.com/Tel3scop/auth/internal/config"
 	"github.com/Tel3scop/auth/internal/interceptor"
+	"github.com/Tel3scop/auth/internal/metrics"
 	accessAPI "github.com/Tel3scop/auth/pkg/access_v1"
 	authAPI "github.com/Tel3scop/auth/pkg/auth_v1"
 	userAPI "github.com/Tel3scop/auth/pkg/user_v1"
+	"github.com/Tel3scop/helpers/logger"
+	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rakyll/statik/fs"
+	"github.com/rs/cors"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -66,6 +70,14 @@ func (a *App) Run() error {
 
 	go func() {
 		defer wg.Done()
+		err := a.runPrometheus()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
 		err := a.runSwaggerServer()
 		if err != nil {
 			log.Fatal(err)
@@ -89,6 +101,8 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initConfig,
 		a.initServiceProvider,
+		a.initLogger,
+		a.initMetrics,
 		a.initGRPCServer,
 		a.initHTTPServer,
 		a.initSwaggerServer,
@@ -113,6 +127,34 @@ func (a *App) initConfig(_ context.Context) error {
 	return nil
 }
 
+func (a *App) initMetrics(_ context.Context) error {
+	err := metrics.Init(
+		a.serviceProvider.Config().Metrics.Namespace,
+		a.serviceProvider.Config().Metrics.AppName,
+		a.serviceProvider.Config().Metrics.Subsystem,
+		a.serviceProvider.Config().Metrics.BucketsStart,
+		a.serviceProvider.Config().Metrics.BucketsFactor,
+		a.serviceProvider.Config().Metrics.BucketsCount,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) initLogger(_ context.Context) error {
+	logger.InitByParams(
+		a.serviceProvider.Config().Log.FileName,
+		a.serviceProvider.Config().Log.Level,
+		a.serviceProvider.Config().Log.MaxSize,
+		a.serviceProvider.Config().Log.MaxBackups,
+		a.serviceProvider.Config().Log.MaxAge,
+		a.serviceProvider.Config().Log.Compress,
+	)
+	return nil
+}
+
 func (a *App) initServiceProvider(_ context.Context) error {
 	a.serviceProvider = newServiceProvider()
 	return nil
@@ -121,7 +163,11 @@ func (a *App) initServiceProvider(_ context.Context) error {
 func (a *App) initGRPCServer(ctx context.Context) error {
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
-		grpc.UnaryInterceptor(interceptor.ValidateInterceptor),
+		grpc.UnaryInterceptor(grpcMiddleware.ChainUnaryServer(
+			interceptor.ValidateInterceptor,
+			interceptor.LogInterceptor,
+			interceptor.MetricsInterceptor,
+		)),
 	)
 
 	reflection.Register(a.grpcServer)
@@ -133,9 +179,9 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 }
 
 func (a *App) runGRPCServer() error {
-	log.Printf("GRPC server is running on %s", a.serviceProvider.config.GRPC.Address)
+	log.Printf("GRPC server is running on %s", a.serviceProvider.Config().GRPC.Address)
 
-	list, err := net.Listen("tcp", a.serviceProvider.config.GRPC.Address)
+	list, err := net.Listen("tcp", a.serviceProvider.Config().GRPC.Address)
 	if err != nil {
 		return err
 	}
@@ -192,6 +238,26 @@ func (a *App) initSwaggerServer(_ context.Context) error {
 		Addr:              a.serviceProvider.Config().Swagger.Address,
 		Handler:           mux,
 		ReadHeaderTimeout: time.Duration(a.serviceProvider.Config().Swagger.Timeout) * time.Second,
+	}
+
+	return nil
+}
+
+func (a *App) runPrometheus() error {
+	logger.Info("Prometheus server is running on %s", zap.String("address", a.serviceProvider.Config().Metrics.Address), zap.String("port", a.serviceProvider.Config().Metrics.Port))
+
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.Handler())
+
+	prometheusServer := &http.Server{
+		Addr:              net.JoinHostPort(a.serviceProvider.Config().Metrics.Address, a.serviceProvider.Config().Metrics.Port),
+		Handler:           mux,
+		ReadHeaderTimeout: 1 * time.Second,
+	}
+
+	err := prometheusServer.ListenAndServe()
+	if err != nil {
+		return err
 	}
 
 	return nil
